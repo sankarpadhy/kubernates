@@ -186,6 +186,30 @@
             text-align: left;
             padding: 10px 15px;
         }
+        .example-item {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .example-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .example-code {
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .example-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -199,13 +223,13 @@
         <!-- Architecture and Component Explorer Row -->
         <div class="row">
             <!-- Left Column - Kubernetes Architecture -->
-            <div class="col-lg-8">
-                <div class="card mb-4">
+            <div class="col-lg-6">
+                <div class="card mb-4" style="height: calc(100vh - 150px);">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">Kubernetes Architecture</h4>
                     </div>
                     <div class="card-body">
-                        <div class="mermaid">
+                        <div class="mermaid h-75">
                             graph TB
                             subgraph Kubernetes Cluster
                                 subgraph Control Plane
@@ -245,20 +269,35 @@
                 </div>
             </div>
 
-            <!-- Right Column - Component Explorer -->
-            <div class="col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Component Explorer</h4>
+            <!-- Right Column - Component Explorer and Examples -->
+            <div class="col-lg-6">
+                <div style="height: calc(100vh - 150px); display: flex; flex-direction: column;">
+                    <!-- Component Explorer -->
+                    <div class="card mb-3" style="flex: 0 0 auto;">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Component Explorer</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('apiserver')">API Server</button>
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('etcd')">etcd</button>
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('kubelet')">Kubelet</button>
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('kubeproxy')">Kube Proxy</button>
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('scheduler')">Scheduler</button>
+                                <button class="btn btn-outline-primary w-100" onclick="showDetails('controllermanager')">Controller Manager</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-column gap-2">
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('apiserver')">API Server</button>
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('etcd')">etcd</button>
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('kubelet')">Kubelet</button>
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('kubeproxy')">Kube Proxy</button>
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('scheduler')">Scheduler</button>
-                            <button class="btn btn-outline-primary w-100" onclick="showDetails('controllermanager')">Controller Manager</button>
+
+                    <!-- Examples Panel -->
+                    <div class="card" style="flex: 1 1 auto; overflow: hidden;">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Examples</h4>
+                        </div>
+                        <div class="card-body" style="overflow-y: auto;">
+                            <div id="examplesPanel">
+                                <!-- Examples will be loaded here based on selected component -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -266,7 +305,7 @@
         </div>
 
         <!-- Interactive Section Row -->
-        <div class="row">
+        <div class="row mt-4">
             <!-- Interactive Exercises -->
             <div class="col-lg-6">
                 <div class="card mb-4">
@@ -900,6 +939,59 @@ redis-master-1         15m          64Mi`;
                 event.target.value = '';
             }
         }
+
+        // Function to update examples
+        function updateExamples(component) {
+            const examplesPanel = document.getElementById('examplesPanel');
+            const examples = getComponentExamples(component);
+            
+            examplesPanel.innerHTML = examples.map(example => `
+                <div class="example-item">
+                    <div class="example-title">${example.title}</div>
+                    <div class="example-code" onclick="copyCommand(this)">${example.code}</div>
+                    <div class="example-description">${example.description}</div>
+                </div>
+            `).join('');
+        }
+
+        // Function to get component examples
+        function getComponentExamples(component) {
+            const examples = {
+                apiserver: [
+                    {
+                        title: 'Check API Server Health',
+                        code: 'kubectl get --raw /healthz',
+                        description: 'Verify the health status of the API server'
+                    },
+                    {
+                        title: 'List API Resources',
+                        code: 'kubectl api-resources',
+                        description: 'Show all available API resources'
+                    }
+                ],
+                etcd: [
+                    {
+                        title: 'Check etcd Health',
+                        code: 'etcdctl endpoint health',
+                        description: 'Verify the health status of etcd cluster'
+                    },
+                    {
+                        title: 'Backup etcd',
+                        code: 'etcdctl snapshot save backup.db',
+                        description: 'Create a snapshot backup of etcd data'
+                    }
+                ],
+                // Add more examples for other components
+            };
+            return examples[component] || [];
+        }
+
+        // Modify showDetails function to update examples
+        const originalShowDetails = showDetails;
+        showDetails = function(component) {
+            originalShowDetails(component);
+            updateExamples(component);
+        };
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
