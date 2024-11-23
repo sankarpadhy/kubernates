@@ -131,6 +131,56 @@
         .btn-outline-primary {
             margin: 5px;
         }
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .terminal-output {
+            background-color: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .command-input {
+            background-color: #1e1e1e !important;
+            color: #fff !important;
+            font-size: 0.9rem;
+        }
+        .command-input::placeholder {
+            color: #6c757d;
+        }
+        .exercise-step {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .mermaid {
+            min-height: 400px;
+        }
+        .code-examples {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .command-category {
+            color: #6c757d;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 5px 0;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .command-response {
+            color: #98c379;
+            white-space: pre-wrap;
+            margin: 5px 0;
+        }
+        .command-line {
+            color: #fff;
+            margin: 5px 0;
+            padding: 2px 0;
+        }
     </style>
 </head>
 <body>
@@ -142,8 +192,8 @@
 
     <div class="container-fluid mt-4">
         <div class="row">
-            <!-- Left Column - Kubernetes Architecture -->
-            <div class="col-lg-8">
+            <!-- Main Column - Kubernetes Architecture -->
+            <div class="col-12">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">Kubernetes Architecture</h4>
@@ -188,10 +238,12 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right Column - Interactive Exercises -->
-            <div class="col-lg-4">
-                <!-- Exercise Controls -->
+        <!-- Interactive Section Row -->
+        <div class="row">
+            <!-- Interactive Exercises -->
+            <div class="col-lg-6">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">Interactive Exercises</h4>
@@ -207,19 +259,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Command Terminal -->
-                <div class="card">
+            <!-- Kubernetes Terminal -->
+            <div class="col-lg-6">
+                <div class="card mb-4">
                     <div class="card-header bg-dark text-white">
                         <h4 class="mb-0">Kubernetes Terminal</h4>
                     </div>
                     <div class="card-body bg-dark">
-                        <div id="commandOutput" class="terminal-output mb-3" style="height: 200px; overflow-y: auto; color: #fff; font-family: monospace;">
+                        <div id="commandOutput" class="terminal-output mb-3" style="height: 300px; overflow-y: auto; color: #fff; font-family: monospace;">
                             <!-- Command output will appear here -->
                         </div>
                         <div class="input-group">
                             <span class="input-group-text bg-dark text-white border-0">$</span>
-                            <input type="text" class="form-control bg-dark text-white border-0" 
+                            <input type="text" class="form-control bg-dark text-white border-0 command-input" 
                                    placeholder="Type kubectl command..." 
                                    onkeypress="handleCommand(event)"
                                    style="font-family: monospace;">
@@ -229,15 +283,15 @@
             </div>
         </div>
 
-        <!-- Component Selection Buttons -->
-        <div class="row mt-4">
+        <!-- Component Explorer Row -->
+        <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">Component Explorer</h4>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
                             <button class="btn btn-outline-primary" onclick="showDetails('apiserver')">API Server</button>
                             <button class="btn btn-outline-primary" onclick="showDetails('etcd')">etcd</button>
                             <button class="btn btn-outline-primary" onclick="showDetails('kubelet')">Kubelet</button>
