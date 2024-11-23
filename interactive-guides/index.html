@@ -737,9 +737,12 @@
             `;
         }
 
-        // Function to copy command to clipboard
+        // Function to copy command to clipboard and populate terminal
         function copyCommand(element) {
             const text = element.textContent;
+            const commandInput = document.querySelector('.command-input');
+            
+            // Copy to clipboard
             navigator.clipboard.writeText(text).then(() => {
                 // Visual feedback
                 const originalBackground = element.style.backgroundColor;
@@ -750,38 +753,93 @@
                     element.style.color = '';
                 }, 500);
             });
-        }
 
-        // Command simulation
-        function handleCommand(event) {
-            if (event.key === 'Enter') {
-                const command = event.target.value;
-                const output = document.getElementById('commandOutput');
-                output.innerHTML += `<div class="command-line">> ${command}</div>`;
-                
-                if (command.includes('kubectl')) {
-                    setTimeout(() => {
-                        let response = simulateKubectlCommand(command);
-                        output.innerHTML += `<div class="command-response">${response}</div>`;
-                    }, 500);
-                } else {
-                    output.innerHTML += `<div class="command-error">Error: Unknown command. Try using kubectl.</div>`;
-                }
-                event.target.value = '';
+            // Populate terminal input and simulate execution
+            if (commandInput) {
+                commandInput.value = text;
+                simulateCommand(text);
             }
         }
 
-        function simulateKubectlCommand(command) {
-            if (command.includes('get pods')) {
-                return `NAME                     READY   STATUS    RESTARTS   AGE
+        // Function to simulate command execution
+        function simulateCommand(command) {
+            const output = document.getElementById('commandOutput');
+            output.innerHTML += `<div class="command-line">> ${command}</div>`;
+            
+            setTimeout(() => {
+                let response = '';
+                
+                // Simulate different command responses
+                if (command.includes('get pods')) {
+                    response = `NAME                     READY   STATUS    RESTARTS   AGE
 nginx-pod               1/1     Running   0          2m
-web-deployment-1234    2/2     Running   0          5m`;
-            } else if (command.includes('get services')) {
-                return `NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+web-deployment-1234    2/2     Running   0          5m
+redis-master-1         1/1     Running   0          10m`;
+                } else if (command.includes('get services')) {
+                    response = `NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP   1h
-nginx        NodePort    10.96.123.456   <none>        80/TCP    5m`;
-            } else {
-                return 'No resources found in default namespace.';
+nginx        NodePort    10.96.123.456   <none>        80/TCP    5m
+redis        ClusterIP   10.96.234.567   <none>        6379/TCP  10m`;
+                } else if (command.includes('describe')) {
+                    response = `Name:         nginx-pod
+Namespace:    default
+Priority:     0
+Node:         worker-1/172.17.0.2
+Start Time:   Mon, 01 Jan 2024 12:00:00 +0000
+Labels:       app=nginx
+Status:       Running
+IP:           10.244.1.2
+Containers:
+  nginx:
+    Container ID:   docker://abc123...
+    Image:         nginx:1.14.2
+    Port:          80/TCP
+    Host Port:     0/TCP
+    State:         Running
+      Started:     Mon, 01 Jan 2024 12:00:05 +0000
+    Ready:         True
+    Restart Count: 0
+    Environment:   <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-xyz (ro)`;
+                } else if (command.includes('logs')) {
+                    response = `2024/01/01 12:00:05 [notice] 1#1: start worker processes
+2024/01/01 12:00:05 [notice] 1#1: nginx/1.14.2
+2024/01/01 12:00:05 [notice] 1#1: built by gcc 8.3.0 (Debian 8.3.0-6)
+2024/01/01 12:00:05 [notice] 1#1: OS: Linux 5.4.0-42-generic
+2024/01/01 12:00:05 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576`;
+                } else if (command.includes('top')) {
+                    response = `NAME                     CPU(cores)   MEMORY(bytes)   
+nginx-pod               10m          128Mi          
+web-deployment-1234    25m          256Mi          
+redis-master-1         15m          64Mi`;
+                } else if (command.includes('etcdctl')) {
+                    response = `{"level":"info","ts":"2024-01-01T12:00:05.123Z","caller":"etcdctl/command.go:89","msg":"Cluster status OK"}`;
+                } else if (command.includes('systemctl status')) {
+                    response = `● kubelet.service - kubelet: The Kubernetes Node Agent
+     Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2024-01-01 12:00:00 UTC; 5min ago
+       Docs: https://kubernetes.io/docs/
+   Main PID: 1234 (kubelet)
+      Tasks: 27
+     Memory: 128.0M
+     CGroup: /system.slice/kubelet.service
+             └─1234 /usr/bin/kubelet --config=/var/lib/kubelet/config.yaml`;
+                } else {
+                    response = `Command executed successfully. Check actual cluster for results.`;
+                }
+                
+                output.innerHTML += `<div class="command-response">${response}</div>`;
+                output.scrollTop = output.scrollHeight;
+            }, 500);
+        }
+
+        // Handle command input
+        function handleCommand(event) {
+            if (event.key === 'Enter') {
+                const command = event.target.value;
+                simulateCommand(command);
+                event.target.value = '';
             }
         }
 
