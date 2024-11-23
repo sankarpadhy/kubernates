@@ -1,43 +1,61 @@
 # Kubernetes Architecture
 
-This section covers the core components of Kubernetes architecture using Docker to demonstrate the concepts.
+This section covers the core components and architecture of Kubernetes.
 
-## Components Overview
+## Overview
 
-### Master Node Components
-1. **API Server**: The front-end interface to the Kubernetes control plane
-2. **Controller Manager**: Manages various controllers that handle node operations
-3. **Scheduler**: Assigns pods to nodes
-4. **etcd**: Distributed key-value store for cluster data
+Kubernetes follows a master-worker architecture, also known as control plane and data plane. Below is a high-level diagram of the Kubernetes architecture:
 
-### Worker Node Components
-1. **Kubelet**: Ensures containers are running in a pod
-2. **Kube-proxy**: Manages network rules
-3. **Container Runtime**: Runs containers (Docker/containerd)
+![Kubernetes Architecture](architecture-diagram.png)
 
-## Practical Exercises
+## Components
 
-### 1. Simulating API Server
-```bash
-# Run a simple API server simulation using Docker
-docker run -d -p 8080:8080 --name api-server nginx
-```
+### Control Plane (Master Node)
+The control plane manages the worker nodes and the Pods in the cluster. It includes:
 
-### 2. Understanding etcd
-```bash
-# Run etcd in Docker
-docker run -d --name etcd \
-  -p 2379:2379 \
-  -p 2380:2380 \
-  quay.io/coreos/etcd:latest
-```
+1. **API Server**
+   - Primary entry point for all REST commands
+   - Validates and processes requests
+   - See [api-server.md](master-components/api-server.md)
 
-### 3. Component Interaction
-See the `component-interaction.yaml` file for a demonstration of how components communicate.
+2. **etcd**
+   - Distributed key-value store
+   - Stores all cluster data
+   - See [etcd.md](master-components/etcd.md)
 
-## Files in this Directory
+3. **Controller Manager**
+   - Runs controller processes
+   - Manages node lifecycle
+   - See [controller-manager.md](master-components/controller-manager.md)
 
-- `api-server-demo/`: Simple API server demonstration
-- `etcd-demo/`: etcd usage examples
-- `component-interaction.yaml`: Example showing component communication
-- `architecture-diagram.png`: Visual representation of Kubernetes architecture
+4. **Scheduler**
+   - Assigns Pods to Nodes
+   - Makes scheduling decisions
+   - See [scheduler.md](master-components/scheduler.md)
+
+### Worker Nodes
+Worker nodes host the applications as containers. Each node includes:
+
+1. **Kubelet**
+   - Node agent that runs on each node
+   - Ensures containers are running in a Pod
+   - See [kubelet.md](worker-components/kubelet.md)
+
+2. **Kube Proxy**
+   - Network proxy on each node
+   - Maintains network rules
+   - See [kube-proxy.md](worker-components/kube-proxy.md)
+
+3. **Container Runtime**
+   - Software for running containers
+   - Usually Docker or containerd
+   - See [container-runtime.md](worker-components/container-runtime.md)
+
+## Component Interaction
+For detailed information about how these components interact with each other, see:
+- [Component Interaction](component-interaction/README.md)
+- [Component Interaction Diagram](component-interaction.yaml)
+
+## Further Reading
+- [Official Kubernetes Documentation](https://kubernetes.io/docs/concepts/overview/components/)
+- [Kubernetes Architecture Explained](https://kubernetes.io/docs/concepts/architecture/)
