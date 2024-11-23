@@ -181,6 +181,11 @@
             margin: 5px 0;
             padding: 2px 0;
         }
+        .btn-outline-primary {
+            margin: 0;
+            text-align: left;
+            padding: 10px 15px;
+        }
     </style>
 </head>
 <body>
@@ -191,9 +196,10 @@
     </nav>
 
     <div class="container-fluid mt-4">
+        <!-- Architecture and Component Explorer Row -->
         <div class="row">
-            <!-- Main Column - Kubernetes Architecture -->
-            <div class="col-12">
+            <!-- Left Column - Kubernetes Architecture -->
+            <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">Kubernetes Architecture</h4>
@@ -238,6 +244,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Right Column - Component Explorer -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Component Explorer</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-column gap-2">
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('apiserver')">API Server</button>
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('etcd')">etcd</button>
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('kubelet')">Kubelet</button>
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('kubeproxy')">Kube Proxy</button>
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('scheduler')">Scheduler</button>
+                            <button class="btn btn-outline-primary w-100" onclick="showDetails('controllermanager')">Controller Manager</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Interactive Section Row -->
@@ -277,27 +302,6 @@
                                    placeholder="Type kubectl command..." 
                                    onkeypress="handleCommand(event)"
                                    style="font-family: monospace;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Component Explorer Row -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Component Explorer</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2 justify-content-center">
-                            <button class="btn btn-outline-primary" onclick="showDetails('apiserver')">API Server</button>
-                            <button class="btn btn-outline-primary" onclick="showDetails('etcd')">etcd</button>
-                            <button class="btn btn-outline-primary" onclick="showDetails('kubelet')">Kubelet</button>
-                            <button class="btn btn-outline-primary" onclick="showDetails('kubeproxy')">Kube Proxy</button>
-                            <button class="btn btn-outline-primary" onclick="showDetails('scheduler')">Scheduler</button>
-                            <button class="btn btn-outline-primary" onclick="showDetails('controllermanager')">Controller Manager</button>
                         </div>
                     </div>
                 </div>
