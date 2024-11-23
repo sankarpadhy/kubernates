@@ -66,6 +66,13 @@
             width: 100%;
             outline: none;
         }
+        .architecture-container {
+            min-height: 1000px;
+            padding: 20px;
+        }
+        .mermaid {
+            min-height: 800px;
+        }
     </style>
 </head>
 <body>
@@ -78,19 +85,19 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-12 mb-4">
-                <h2>Kubernetes Architecture</h2>
-                <div class="mermaid">
-                    graph TD
-                        subgraph "Kubernetes Cluster"
-                            subgraph "Control Plane (Master Node)"
-                                API[API Server] --> ETCD[etcd]
-                                API --> CM[Controller Manager]
-                                API --> SCHED[Scheduler]
-                                CM --> API
-                                SCHED --> API
-                            end
+                <div class="architecture-container">
+                    <h2>Kubernetes Architecture</h2>
+                    <div class="mermaid">
+                        graph TB
+                            subgraph "Kubernetes Cluster"
+                                subgraph "Control Plane (Master Node)"
+                                    API[API Server] --> ETCD[etcd]
+                                    API --> CM[Controller Manager]
+                                    API --> SCHED[Scheduler]
+                                    CM --> API
+                                    SCHED --> API
+                                end
 
-                            subgraph "Worker Nodes"
                                 subgraph "Worker Node 1"
                                     KL1[KL] --> API
                                     KP1[KP] --> API
@@ -105,48 +112,59 @@
                                     KL2 --> CR2
                                 end
                             end
-                        end
 
-                        subgraph "Legend"
-                            L1[KL: Kubelet - Node Agent]
-                            L2[KP: Kube Proxy - Network Rules]
-                            L3[CR: Container Runtime - Docker/containerd]
-                            L4[Control Plane Components:]
-                            L5[API: API Server - Central Control]
-                            L6[ETCD: Cluster Data Store]
-                            L7[CM: Controller Manager]
-                            L8[SCHED: Scheduler]
-                        end
+                            subgraph "Component Legend"
+                                L0["Worker Node Components:"]
+                                L1[KL: Kubelet - Node Agent]
+                                L2[KP: Kube Proxy - Network Rules]
+                                L3[CR: Container Runtime - Docker/containerd]
+                                
+                                L4["Control Plane Components:"]
+                                L5[API: API Server - Central Control]
+                                L6[ETCD: Cluster Data Store]
+                                L7[CM: Controller Manager]
+                                L8[SCHED: Scheduler]
+                            end
 
-                        style API fill:#f9f,stroke:#333,stroke-width:2px
-                        style ETCD fill:#bbf,stroke:#333,stroke-width:2px
-                        style CM fill:#bfb,stroke:#333,stroke-width:2px
-                        style SCHED fill:#fbf,stroke:#333,stroke-width:2px
-                        style KL1,KL2 fill:#ff9,stroke:#333,stroke-width:2px
-                        style KP1,KP2 fill:#f99,stroke:#333,stroke-width:2px
-                        style CR1,CR2 fill:#9ff,stroke:#333,stroke-width:2px
-                        style L1 fill:#ff9,stroke:#333,stroke-width:2px
-                        style L2 fill:#f99,stroke:#333,stroke-width:2px
-                        style L3 fill:#9ff,stroke:#333,stroke-width:2px
-                        style L5 fill:#f9f,stroke:#333,stroke-width:2px
-                        style L6 fill:#bbf,stroke:#333,stroke-width:2px
-                        style L7 fill:#bfb,stroke:#333,stroke-width:2px
-                        style L8 fill:#fbf,stroke:#333,stroke-width:2px
+                            %% Styles
+                            style API fill:#f9f,stroke:#333,stroke-width:2px
+                            style ETCD fill:#bbf,stroke:#333,stroke-width:2px
+                            style CM fill:#bfb,stroke:#333,stroke-width:2px
+                            style SCHED fill:#fbf,stroke:#333,stroke-width:2px
+                            style KL1,KL2 fill:#ff9,stroke:#333,stroke-width:2px
+                            style KP1,KP2 fill:#f99,stroke:#333,stroke-width:2px
+                            style CR1,CR2 fill:#9ff,stroke:#333,stroke-width:2px
+                            
+                            %% Legend styles
+                            style L1 fill:#ff9,stroke:#333,stroke-width:2px
+                            style L2 fill:#f99,stroke:#333,stroke-width:2px
+                            style L3 fill:#9ff,stroke:#333,stroke-width:2px
+                            style L5 fill:#f9f,stroke:#333,stroke-width:2px
+                            style L6 fill:#bbf,stroke:#333,stroke-width:2px
+                            style L7 fill:#bfb,stroke:#333,stroke-width:2px
+                            style L8 fill:#fbf,stroke:#333,stroke-width:2px
 
-                        classDef legend fill:none,stroke:none
-                        class L1,L2,L3,L4,L5,L6,L7,L8 legend
-                        classDef cluster fill:#f5f5f5,stroke:#333,stroke-width:2px
-                        class Cluster cluster
-                </div>
+                            classDef legendHeader fill:none,stroke:none,color:#666
+                            class L0,L4 legendHeader
+                            classDef cluster fill:#f5f5f5,stroke:#333,stroke-width:2px
+                            class Cluster cluster
+                    </div>
 
-                <div class="alert alert-info mt-3">
-                    <h5>About the Architecture:</h5>
-                    <ul>
-                        <li>The entire system runs within the <strong>Kubernetes Cluster</strong> boundary</li>
-                        <li>The <strong>Control Plane</strong> manages the cluster state and control</li>
-                        <li><strong>Worker Nodes</strong> run the actual application workloads</li>
-                        <li>All communication flows through the <strong>API Server</strong></li>
-                    </ul>
+                    <div class="alert alert-info mt-4">
+                        <h5>Key Architecture Points:</h5>
+                        <ul>
+                            <li>The <strong>Control Plane</strong> manages the entire cluster state and operations</li>
+                            <li>The <strong>API Server</strong> is the central hub for all cluster communication</li>
+                            <li><strong>Worker Nodes</strong> run the actual application workloads</li>
+                            <li>Each Worker Node contains three key components:
+                                <ul>
+                                    <li>Kubelet (KL): Manages containers on the node</li>
+                                    <li>Kube Proxy (KP): Handles network routing</li>
+                                    <li>Container Runtime (CR): Runs the containers</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">
