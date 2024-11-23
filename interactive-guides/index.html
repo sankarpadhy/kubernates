@@ -104,6 +104,116 @@
             font-size: 0.95rem;
             margin-bottom: 10px;
         }
+        .setup-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #17a2b8;
+        }
+        .setup-command-container {
+            margin-top: 15px;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .setup-command {
+            color: #fff;
+            font-family: monospace;
+            margin: 0;
+            cursor: pointer;
+            position: relative;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .setup-command:hover {
+            background-color: #2d2d2d;
+            border-color: #666;
+        }
+        .setup-command::before {
+            content: '$ ';
+            color: #666;
+        }
+        .copy-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .setup-command:hover .copy-indicator {
+            opacity: 0.7;
+        }
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .setup-step {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .setup-step h6 {
+            color: #0d6efd;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .setup-step h6 i {
+            font-size: 1.2em;
+        }
+        .expected-header {
+            font-weight: 600;
+            color: #198754;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .command-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .verification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+        .verification-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .verification-list li i {
+            color: #198754;
+        }
+        .warning-note {
+            font-size: 0.9rem;
+            color: #664d03;
+            background-color: #fff3cd;
+            border: 1px solid #ffecb5;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
 </head>
 <body>
@@ -135,73 +245,128 @@
                             <h5>Quick Start Steps:</h5>
                             <div class="step-list">
                                 <div class="setup-step" data-step="1">
-                                    <h6>1. Verify Docker Installation</h6>
-                                    <p class="step-description">Check Docker version and service status:</p>
-                                    <pre class="setup-command" onclick="copyCommand(this)">docker --version && docker info</pre>
+                                    <h6><i class="bi bi-1-circle-fill"></i>Verify Docker Installation</h6>
+                                    <p class="step-description">Let's verify that Docker is properly installed and running on your system.</p>
+                                    
                                     <div class="setup-info">
-                                        <strong>Expected:</strong>
-                                        <ul>
-                                            <li>Docker version 4.0.0 or higher</li>
-                                            <li>Docker daemon should be running</li>
-                                            <li>Docker Desktop should be in Linux container mode</li>
+                                        <div class="expected-header">
+                                            <i class="bi bi-check-circle"></i>Expected Configuration
+                                        </div>
+                                        <ul class="verification-list">
+                                            <li><i class="bi bi-dot"></i>Docker version 4.0.0 or higher</li>
+                                            <li><i class="bi bi-dot"></i>Docker daemon running</li>
+                                            <li><i class="bi bi-dot"></i>Linux containers mode enabled</li>
                                         </ul>
-                                    </div>
-                                    <div class="step-status"></div>
-                                </div>
-                                <div class="setup-step" data-step="2">
-                                    <h6>2. Verify kubectl Installation</h6>
-                                    <p class="step-description">Check kubectl version:</p>
-                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl version --client</pre>
-                                    <div class="setup-info">
-                                        <strong>Expected:</strong>
-                                        <ul>
-                                            <li>Client version 1.20.0 or higher</li>
-                                            <li>No connection errors</li>
-                                        </ul>
-                                    </div>
-                                    <div class="step-status"></div>
-                                </div>
-                                <div class="setup-step" data-step="3">
-                                    <h6>3. Start Local Kubernetes Cluster</h6>
-                                    <p class="step-description">Initialize minikube with Docker driver:</p>
-                                    <pre class="setup-command" onclick="copyCommand(this)">minikube version && minikube start --driver=docker --kubernetes-version=v1.26.0</pre>
-                                    <div class="setup-info">
-                                        <strong>Expected:</strong>
-                                        <ul>
-                                            <li>minikube version 1.25.0 or higher</li>
-                                            <li>Successful cluster creation</li>
-                                            <li>Docker driver properly configured</li>
-                                        </ul>
-                                        <div class="alert alert-warning mt-2">
-                                            <i class="bi bi-info-circle"></i> This step may take a few minutes to complete.
+                                        
+                                        <div class="command-label">
+                                            <i class="bi bi-terminal"></i>Run this command to verify:
+                                        </div>
+                                        <div class="setup-command-container">
+                                            <pre class="setup-command" onclick="copyCommand(this)">docker --version && docker info<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
                                         </div>
                                     </div>
                                     <div class="step-status"></div>
                                 </div>
-                                <div class="setup-step" data-step="4">
-                                    <h6>4. Verify Cluster Status</h6>
-                                    <p class="step-description">Check cluster and node status:</p>
-                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl cluster-info && kubectl get nodes -o wide</pre>
+
+                                <div class="setup-step" data-step="2">
+                                    <h6><i class="bi bi-2-circle-fill"></i>Verify kubectl Installation</h6>
+                                    <p class="step-description">Check if kubectl is installed and properly configured.</p>
+                                    
                                     <div class="setup-info">
-                                        <strong>Expected:</strong>
-                                        <ul>
-                                            <li>Kubernetes control plane should be running</li>
-                                            <li>CoreDNS should be running</li>
-                                            <li>Node status should be "Ready"</li>
+                                        <div class="expected-header">
+                                            <i class="bi bi-check-circle"></i>Expected Configuration
+                                        </div>
+                                        <ul class="verification-list">
+                                            <li><i class="bi bi-dot"></i>kubectl version 1.20.0 or higher</li>
+                                            <li><i class="bi bi-dot"></i>No connection errors</li>
                                         </ul>
+                                        
+                                        <div class="command-label">
+                                            <i class="bi bi-terminal"></i>Run this command to verify:
+                                        </div>
+                                        <div class="setup-command-container">
+                                            <pre class="setup-command" onclick="copyCommand(this)">kubectl version --client<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                        </div>
                                     </div>
                                     <div class="step-status"></div>
                                 </div>
-                                <div class="setup-step" data-step="5">
-                                    <h6>5. Enable Required Addons</h6>
-                                    <p class="step-description">Enable necessary minikube addons:</p>
-                                    <pre class="setup-command" onclick="copyCommand(this)">minikube addons enable metrics-server && minikube addons enable dashboard && minikube addons list</pre>
+
+                                <div class="setup-step" data-step="3">
+                                    <h6><i class="bi bi-3-circle-fill"></i>Start Local Kubernetes Cluster</h6>
+                                    <p class="step-description">Initialize a local Kubernetes cluster using minikube.</p>
+                                    
                                     <div class="setup-info">
-                                        <strong>Expected:</strong>
-                                        <ul>
-                                            <li>metrics-server addon enabled</li>
-                                            <li>dashboard addon enabled</li>
+                                        <div class="expected-header">
+                                            <i class="bi bi-check-circle"></i>Expected Configuration
+                                        </div>
+                                        <ul class="verification-list">
+                                            <li><i class="bi bi-dot"></i>minikube version 1.25.0 or higher</li>
+                                            <li><i class="bi bi-dot"></i>Docker driver configured</li>
+                                            <li><i class="bi bi-dot"></i>Kubernetes v1.26.0 or higher</li>
                                         </ul>
+                                        
+                                        <div class="command-label">
+                                            <i class="bi bi-terminal"></i>Run these commands to start:
+                                        </div>
+                                        <div class="setup-command-container">
+                                            <pre class="setup-command" onclick="copyCommand(this)">minikube version<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                            <pre class="setup-command mt-2" onclick="copyCommand(this)">minikube start --driver=docker --kubernetes-version=v1.26.0<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                        </div>
+                                        
+                                        <div class="warning-note">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            This step may take a few minutes to complete as it downloads necessary components.
+                                        </div>
+                                    </div>
+                                    <div class="step-status"></div>
+                                </div>
+
+                                <div class="setup-step" data-step="4">
+                                    <h6><i class="bi bi-4-circle-fill"></i>Verify Cluster Status</h6>
+                                    <p class="step-description">Ensure the Kubernetes cluster is running properly.</p>
+                                    
+                                    <div class="setup-info">
+                                        <div class="expected-header">
+                                            <i class="bi bi-check-circle"></i>Expected Configuration
+                                        </div>
+                                        <ul class="verification-list">
+                                            <li><i class="bi bi-dot"></i>Control plane is running</li>
+                                            <li><i class="bi bi-dot"></i>CoreDNS is active</li>
+                                            <li><i class="bi bi-dot"></i>Node status shows "Ready"</li>
+                                        </ul>
+                                        
+                                        <div class="command-label">
+                                            <i class="bi bi-terminal"></i>Run these commands to verify:
+                                        </div>
+                                        <div class="setup-command-container">
+                                            <pre class="setup-command" onclick="copyCommand(this)">kubectl cluster-info<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                            <pre class="setup-command mt-2" onclick="copyCommand(this)">kubectl get nodes -o wide<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                        </div>
+                                    </div>
+                                    <div class="step-status"></div>
+                                </div>
+
+                                <div class="setup-step" data-step="5">
+                                    <h6><i class="bi bi-5-circle-fill"></i>Enable Required Addons</h6>
+                                    <p class="step-description">Enable necessary minikube addons for monitoring and management.</p>
+                                    
+                                    <div class="setup-info">
+                                        <div class="expected-header">
+                                            <i class="bi bi-check-circle"></i>Expected Configuration
+                                        </div>
+                                        <ul class="verification-list">
+                                            <li><i class="bi bi-dot"></i>metrics-server enabled for resource monitoring</li>
+                                            <li><i class="bi bi-dot"></i>dashboard enabled for visual management</li>
+                                        </ul>
+                                        
+                                        <div class="command-label">
+                                            <i class="bi bi-terminal"></i>Run these commands to enable addons:
+                                        </div>
+                                        <div class="setup-command-container">
+                                            <pre class="setup-command" onclick="copyCommand(this)">minikube addons enable metrics-server<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                            <pre class="setup-command mt-2" onclick="copyCommand(this)">minikube addons enable dashboard<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                            <pre class="setup-command mt-2" onclick="copyCommand(this)">minikube addons list<span class="copy-indicator"><i class="bi bi-clipboard"></i></span></pre>
+                                        </div>
                                     </div>
                                     <div class="step-status"></div>
                                 </div>
