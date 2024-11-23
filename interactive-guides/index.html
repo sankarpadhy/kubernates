@@ -73,6 +73,75 @@
         .mermaid {
             min-height: 800px;
         }
+        .exercise-step {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .command-line {
+            color: #fff;
+            margin: 5px 0;
+        }
+        .command-response {
+            color: #98c379;
+            margin: 5px 0;
+            white-space: pre;
+            font-family: monospace;
+        }
+        .command-error {
+            color: #e06c75;
+            margin: 5px 0;
+        }
+        .code-examples {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .architecture-container {
+            padding: 20px;
+        }
+        .mermaid {
+            min-height: 600px;
+        }
+        .exercise-step {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .command-line {
+            color: #fff;
+            margin: 5px 0;
+        }
+        .command-response {
+            color: #98c379;
+            margin: 5px 0;
+            white-space: pre;
+            font-family: monospace;
+        }
+        .command-error {
+            color: #e06c75;
+            margin: 5px 0;
+        }
+        .code-examples {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .terminal-output {
+            background-color: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-outline-primary {
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -82,273 +151,399 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="architecture-container">
-                    <h2>Kubernetes Architecture</h2>
-                    <div class="mermaid">
-                        graph TB
-                            subgraph "Kubernetes Cluster"
-                                subgraph "Control Plane (Master Node)"
-                                    API[API Server] --> ETCD[etcd]
-                                    API --> CM[Controller Manager]
-                                    API --> SCHED[Scheduler]
-                                    CM --> API
-                                    SCHED --> API
+            <!-- Left Column - Kubernetes Architecture -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Kubernetes Architecture</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mermaid">
+                            graph TB
+                            subgraph Kubernetes Cluster
+                                subgraph Control Plane
+                                    API[API Server]
+                                    ETCD[etcd]
+                                    CM[Controller Manager]
+                                    SCHED[Scheduler]
                                 end
-
-                                subgraph "Worker Node 1"
-                                    KL1[KL] --> API
-                                    KP1[KP] --> API
-                                    CR1[CR]
-                                    KL1 --> CR1
-                                end
-
-                                subgraph "Worker Node 2"
-                                    KL2[KL] --> API
-                                    KP2[KP] --> API
-                                    CR2[CR]
-                                    KL2 --> CR2
-                                end
-                            end
-
-                            subgraph "Component Legend"
-                                L0["Worker Node Components:"]
-                                L1[KL: Kubelet - Node Agent]
-                                L2[KP: Kube Proxy - Network Rules]
-                                L3[CR: Container Runtime - Docker/containerd]
                                 
-                                L4["Control Plane Components:"]
-                                L5[API: API Server - Central Control]
-                                L6[ETCD: Cluster Data Store]
-                                L7[CM: Controller Manager]
-                                L8[SCHED: Scheduler]
+                                subgraph Worker Node 1
+                                    KL1[Kubelet]
+                                    KP1[Kube Proxy]
+                                    CR1[Container Runtime]
+                                end
+                                
+                                subgraph Worker Node 2
+                                    KL2[Kubelet]
+                                    KP2[Kube Proxy]
+                                    CR2[Container Runtime]
+                                end
+                                
+                                API --> KL1
+                                API --> KL2
+                                KL1 --> CR1
+                                KL2 --> CR2
+                                API --> ETCD
+                                CM --> API
+                                SCHED --> API
                             end
-
-                            %% Styles
-                            style API fill:#f9f,stroke:#333,stroke-width:2px
-                            style ETCD fill:#bbf,stroke:#333,stroke-width:2px
-                            style CM fill:#bfb,stroke:#333,stroke-width:2px
-                            style SCHED fill:#fbf,stroke:#333,stroke-width:2px
-                            style KL1,KL2 fill:#ff9,stroke:#333,stroke-width:2px
-                            style KP1,KP2 fill:#f99,stroke:#333,stroke-width:2px
-                            style CR1,CR2 fill:#9ff,stroke:#333,stroke-width:2px
-                            
-                            %% Legend styles
-                            style L1 fill:#ff9,stroke:#333,stroke-width:2px
-                            style L2 fill:#f99,stroke:#333,stroke-width:2px
-                            style L3 fill:#9ff,stroke:#333,stroke-width:2px
-                            style L5 fill:#f9f,stroke:#333,stroke-width:2px
-                            style L6 fill:#bbf,stroke:#333,stroke-width:2px
-                            style L7 fill:#bfb,stroke:#333,stroke-width:2px
-                            style L8 fill:#fbf,stroke:#333,stroke-width:2px
-
-                            classDef legendHeader fill:none,stroke:none,color:#666
-                            class L0,L4 legendHeader
-                            classDef cluster fill:#f5f5f5,stroke:#333,stroke-width:2px
-                            class Cluster cluster
-                    </div>
-
-                    <div class="alert alert-info mt-4">
-                        <h5>Key Architecture Points:</h5>
-                        <ul>
-                            <li>The <strong>Control Plane</strong> manages the entire cluster state and operations</li>
-                            <li>The <strong>API Server</strong> is the central hub for all cluster communication</li>
-                            <li><strong>Worker Nodes</strong> run the actual application workloads</li>
-                            <li>Each Worker Node contains three key components:
-                                <ul>
-                                    <li>Kubelet (KL): Manages containers on the node</li>
-                                    <li>Kube Proxy (KP): Handles network routing</li>
-                                    <li>Container Runtime (CR): Runs the containers</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="component control-plane" onclick="showDetails('apiserver')">
-                            <h4>API Server</h4>
-                            <p>The front door to the Kubernetes control plane</p>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="component control-plane" onclick="showDetails('etcd')">
-                            <h4>etcd</h4>
-                            <p>Distributed key-value store</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="component worker-node" onclick="showDetails('kubelet')">
-                            <h4>Kubelet</h4>
-                            <p>Node agent that runs on each node</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="component worker-node" onclick="showDetails('kubeproxy')">
-                            <h4>Kube Proxy</h4>
-                            <p>Network proxy on each node</p>
+                        
+                        <!-- Component Details Panel -->
+                        <div id="detailsPanel" class="mt-4 p-3 border rounded bg-light">
+                            <!-- Component details will be loaded here -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="details-panel" id="detailsPanel">
-                    <h3>Component Details</h3>
-                    <p>Click on any component to learn more</p>
+            <!-- Right Column - Interactive Exercises -->
+            <div class="col-lg-4">
+                <!-- Exercise Controls -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Interactive Exercises</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="startExercise('pods')">Pod Lifecycle</button>
+                            <button class="btn btn-primary" onclick="startExercise('services')">Service Networking</button>
+                            <button class="btn btn-primary" onclick="startExercise('deployment')">Deployment Strategy</button>
+                        </div>
+                        <div id="exerciseOutput" class="mt-3">
+                            <!-- Exercise output will appear here -->
+                        </div>
+                    </div>
                 </div>
 
-                <div class="interactive-terminal">
-                    <div class="mb-2">Try Kubernetes commands:</div>
-                    <input type="text" class="command-input" id="commandInput" 
-                           placeholder="Enter kubectl command..." 
-                           onkeypress="handleCommand(event)">
-                    <div id="commandOutput" class="mt-2"></div>
+                <!-- Command Terminal -->
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0">Kubernetes Terminal</h4>
+                    </div>
+                    <div class="card-body bg-dark">
+                        <div id="commandOutput" class="terminal-output mb-3" style="height: 200px; overflow-y: auto; color: #fff; font-family: monospace;">
+                            <!-- Command output will appear here -->
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark text-white border-0">$</span>
+                            <input type="text" class="form-control bg-dark text-white border-0" 
+                                   placeholder="Type kubectl command..." 
+                                   onkeypress="handleCommand(event)"
+                                   style="font-family: monospace;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Component Selection Buttons -->
         <div class="row mt-4">
             <div class="col-12">
-                <h3>Interactive Exercises</h3>
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action" onclick="startExercise('pods')">
-                        <h5>Pod Lifecycle Exercise</h5>
-                        <p>Learn how pods are created, scheduled, and managed</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action" onclick="startExercise('services')">
-                        <h5>Service Networking Exercise</h5>
-                        <p>Understand how services enable pod communication</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action" onclick="startExercise('deployment')">
-                        <h5>Deployment Strategies Exercise</h5>
-                        <p>Practice different deployment patterns</p>
-                    </a>
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Component Explorer</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-primary" onclick="showDetails('apiserver')">API Server</button>
+                            <button class="btn btn-outline-primary" onclick="showDetails('etcd')">etcd</button>
+                            <button class="btn btn-outline-primary" onclick="showDetails('kubelet')">Kubelet</button>
+                            <button class="btn btn-outline-primary" onclick="showDetails('kubeproxy')">Kube Proxy</button>
+                            <button class="btn btn-outline-primary" onclick="showDetails('scheduler')">Scheduler</button>
+                            <button class="btn btn-outline-primary" onclick="showDetails('controllermanager')">Controller Manager</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+
+        // Exercise simulations with detailed steps and explanations
+        const exercises = {
+            pods: {
+                title: 'Pod Lifecycle Visualization',
+                steps: [
+                    { 
+                        action: 'Creating Pod Manifest',
+                        detail: 'kubectl create -f pod.yaml',
+                        explanation: 'API Server receives the pod creation request',
+                        delay: 1000 
+                    },
+                    { 
+                        action: 'Validating Pod Specification',
+                        detail: 'API Server validates the pod configuration',
+                        explanation: 'Checking resource requirements, security contexts, and namespace quotas',
+                        delay: 1500 
+                    },
+                    { 
+                        action: 'Scheduling Pod',
+                        detail: 'Scheduler selects optimal node',
+                        explanation: 'Evaluating node resources, taints/tolerations, and affinity rules',
+                        delay: 2000 
+                    },
+                    { 
+                        action: 'Kubelet Creating Containers',
+                        detail: 'Pulling images and creating containers',
+                        explanation: 'Container runtime downloads images and starts containers in order',
+                        delay: 2500 
+                    },
+                    { 
+                        action: 'Pod Running',
+                        detail: 'Pod is now in Running state',
+                        explanation: 'All containers are running and health checks are passing',
+                        delay: 2000 
+                    }
+                ],
+                diagram: `
+                    sequenceDiagram
+                        participant U as User/kubectl
+                        participant A as API Server
+                        participant S as Scheduler
+                        participant K as Kubelet
+                        participant C as Container Runtime
+                        
+                        U->>A: Create Pod
+                        A->>A: Validate
+                        A->>S: Schedule Pod
+                        S->>A: Node Selected
+                        A->>K: Create Pod
+                        K->>C: Create Container
+                        C->>K: Container Running
+                        K->>A: Pod Running
+                `
+            },
+            services: {
+                title: 'Service Networking Exercise',
+                steps: [
+                    { 
+                        action: 'Creating Service',
+                        detail: 'kubectl create service',
+                        explanation: 'Creating a new service to expose pods',
+                        delay: 1000 
+                    },
+                    { 
+                        action: 'Configuring Endpoints',
+                        detail: 'Service selecting pod endpoints',
+                        explanation: 'Matching pods based on label selectors',
+                        delay: 1500 
+                    },
+                    { 
+                        action: 'Setting up Load Balancer',
+                        detail: 'Configuring network rules',
+                        explanation: 'kube-proxy updating iptables rules',
+                        delay: 2000 
+                    },
+                    { 
+                        action: 'Service Active',
+                        detail: 'Service is now routing traffic',
+                        explanation: 'Traffic is being distributed to pods',
+                        delay: 2000 
+                    }
+                ]
+            },
+            deployment: {
+                title: 'Deployment Strategy Exercise',
+                steps: [
+                    { 
+                        action: 'Creating Deployment',
+                        detail: 'kubectl create deployment',
+                        explanation: 'Setting up the deployment controller',
+                        delay: 1000 
+                    },
+                    { 
+                        action: 'Scaling Replicas',
+                        detail: 'Creating ReplicaSets',
+                        explanation: 'Ensuring desired number of pods',
+                        delay: 1500 
+                    },
+                    { 
+                        action: 'Rolling Update',
+                        detail: 'Updating pod templates',
+                        explanation: 'Gradually replacing old pods with new ones',
+                        delay: 2000 
+                    },
+                    { 
+                        action: 'Deployment Complete',
+                        detail: 'New version deployed',
+                        explanation: 'All pods running latest version',
+                        delay: 2000 
+                    }
+                ]
+            }
+        };
+
+        // Function to simulate exercises with detailed visualization
+        function startExercise(type) {
+            const exercise = exercises[type];
+            if (!exercise) return;
+
+            // Create or get the exercise output container
+            const container = document.getElementById('exerciseOutput');
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">${exercise.title}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%">
+                            </div>
+                        </div>
+                        <div id="exerciseSteps"></div>
+                        ${exercise.diagram ? `
+                            <div class="mt-3">
+                                <h6>Sequence Diagram:</h6>
+                                <div class="mermaid">
+                                    ${exercise.diagram}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Initialize Mermaid for the new diagram
+            if (exercise.diagram) {
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+
+            const stepsDiv = document.getElementById('exerciseSteps');
+            const progressBar = container.querySelector('.progress-bar');
+            let currentStep = 0;
+
+            function runStep() {
+                if (currentStep < exercise.steps.length) {
+                    const step = exercise.steps[currentStep];
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'exercise-step mb-3';
+                    stepElement.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            <div>
+                                <strong>${step.action}</strong>
+                                <div class="text-muted small">${step.detail}</div>
+                                <div class="text-info small">${step.explanation}</div>
+                            </div>
+                        </div>
+                    `;
+                    stepsDiv.appendChild(stepElement);
+
+                    // Update progress bar
+                    const progress = ((currentStep + 1) / exercise.steps.length) * 100;
+                    progressBar.style.width = `${progress}%`;
+
+                    setTimeout(() => {
+                        stepElement.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <div>
+                                    <strong>${step.action}</strong>
+                                    <div class="text-muted small">${step.detail}</div>
+                                    <div class="text-info small">${step.explanation}</div>
+                                </div>
+                            </div>
+                        `;
+                        currentStep++;
+                        runStep();
+                    }, step.delay);
+                }
+            }
+
+            runStep();
+        }
+
+        // Component details for the info panel
         const componentDetails = {
             apiserver: {
                 title: 'API Server',
                 description: 'The Kubernetes API server validates and configures data for the api objects which include pods, services, replicationcontrollers, and others.',
-                responsibilities: [
-                    'Authentication and Authorization',
-                    'API Registration and Discovery',
-                    'Request Processing',
-                    'Resource Validation'
+                examples: [
+                    'kubectl get pods',
+                    'kubectl apply -f deployment.yaml',
+                    'kubectl describe service my-service'
                 ]
             },
             etcd: {
                 title: 'etcd',
                 description: 'etcd is a consistent and highly-available key-value store used as Kubernetes\' backing store for all cluster data.',
-                responsibilities: [
-                    'Storing Cluster State',
-                    'Watching for Changes',
-                    'Maintaining Consistency',
-                    'Backup and Recovery'
+                examples: [
+                    'etcdctl get /registry/pods/default',
+                    'etcdctl backup',
+                    'etcdctl cluster-health'
                 ]
             },
             kubelet: {
                 title: 'Kubelet',
-                description: 'The kubelet is the primary "node agent" that runs on each node in the cluster.',
-                responsibilities: [
-                    'Pod Management',
-                    'Container Health Checks',
-                    'Resource Reporting',
-                    'Node Status Updates'
-                ]
-            },
-            kubeproxy: {
-                title: 'Kube Proxy',
-                description: 'kube-proxy maintains network rules on nodes. These network rules allow network communication to your Pods from network sessions inside or outside of your cluster.',
-                responsibilities: [
-                    'Service Abstraction',
-                    'Load Balancing',
-                    'Network Rules Management',
-                    'Connection Forwarding'
+                description: 'The kubelet is the primary "node agent" that runs on each node and ensures containers are running in a Pod.',
+                examples: [
+                    'kubelet --config=config.yaml',
+                    'systemctl status kubelet',
+                    'journalctl -u kubelet'
                 ]
             }
         };
 
+        // Function to show component details
         function showDetails(component) {
             const details = componentDetails[component];
-            const detailsHtml = `
+            if (!details) return;
+
+            const detailsPanel = document.getElementById('detailsPanel');
+            detailsPanel.innerHTML = `
                 <h3>${details.title}</h3>
                 <p>${details.description}</p>
-                <h5>Key Responsibilities:</h5>
-                <ul>
-                    ${details.responsibilities.map(r => `<li>${r}</li>`).join('')}
-                </ul>
+                <h5>Example Commands:</h5>
+                <div class="code-examples">
+                    ${details.examples.map(ex => `<code>${ex}</code>`).join('<br>')}
+                </div>
             `;
-            document.getElementById('detailsPanel').innerHTML = detailsHtml;
         }
 
+        // Command simulation
         function handleCommand(event) {
             if (event.key === 'Enter') {
                 const command = event.target.value;
                 const output = document.getElementById('commandOutput');
-                output.innerHTML += `<div>> ${command}</div>`;
+                output.innerHTML += `<div class="command-line">> ${command}</div>`;
                 
-                // Simulate command execution
                 if (command.includes('kubectl')) {
                     setTimeout(() => {
-                        output.innerHTML += `<div class="text-success">Simulated output for: ${command}</div>`;
+                        let response = simulateKubectlCommand(command);
+                        output.innerHTML += `<div class="command-response">${response}</div>`;
                     }, 500);
                 } else {
-                    output.innerHTML += `<div class="text-danger">Error: Unknown command</div>`;
+                    output.innerHTML += `<div class="command-error">Error: Unknown command. Try using kubectl.</div>`;
                 }
                 event.target.value = '';
             }
         }
 
-        function startExercise(type) {
-            const container = document.getElementById('architectureDemo');
-            container.innerHTML = ''; // Clear existing content
-
-            switch(type) {
-                case 'pods':
-                    simulatePodLifecycle(container);
-                    break;
-                case 'services':
-                    simulateServiceNetworking(container);
-                    break;
-                case 'deployment':
-                    simulateDeployment(container);
-                    break;
+        function simulateKubectlCommand(command) {
+            if (command.includes('get pods')) {
+                return `NAME                     READY   STATUS    RESTARTS   AGE
+nginx-pod               1/1     Running   0          2m
+web-deployment-1234    2/2     Running   0          5m`;
+            } else if (command.includes('get services')) {
+                return `NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP   1h
+nginx        NodePort    10.96.123.456   <none>        80/TCP    5m`;
+            } else {
+                return 'No resources found in default namespace.';
             }
         }
 
-        function simulatePodLifecycle(container) {
-            const pod = document.createElement('div');
-            pod.className = 'pod';
-            pod.innerHTML = 'Pod';
-            pod.style.left = '10px';
-            pod.style.top = '10px';
-            container.appendChild(pod);
-
-            // Animate pod creation and scheduling
-            setTimeout(() => {
-                pod.style.left = '200px';
-                pod.style.top = '150px';
-            }, 1000);
-        }
-
-        // Initialize Mermaid
-        mermaid.initialize({ startOnLoad: true, theme: 'default' });
-
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
-            showDetails('apiserver'); // Show API Server details by default
+            showDetails('apiserver');
         });
     </script>
 
