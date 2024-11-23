@@ -98,38 +98,27 @@
             padding: 10px;
             border-radius: 4px;
             font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
         }
-        .architecture-container {
-            padding: 20px;
+        .code-examples code {
+            display: block;
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #e9ecef;
+            border-radius: 3px;
         }
-        .mermaid {
-            min-height: 600px;
+        .code-examples code:hover {
+            background-color: #dee2e6;
+            cursor: pointer;
         }
-        .exercise-step {
+        .command-category {
             margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #f8f9fa;
-        }
-        .command-line {
-            color: #fff;
-            margin: 5px 0;
-        }
-        .command-response {
-            color: #98c379;
-            margin: 5px 0;
-            white-space: pre;
-            font-family: monospace;
-        }
-        .command-error {
-            color: #e06c75;
-            margin: 5px 0;
-        }
-        .code-examples {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
+            padding: 5px;
+            border-bottom: 1px solid #dee2e6;
+            color: #495057;
+            font-weight: bold;
         }
         .terminal-output {
             background-color: #1e1e1e;
@@ -461,78 +450,306 @@
             runStep();
         }
 
-        // Component details for the info panel
+        // Component details for the info panel with comprehensive command lists
         const componentDetails = {
             apiserver: {
                 title: 'API Server',
                 description: 'The Kubernetes API server validates and configures data for the api objects which include pods, services, replicationcontrollers, and others.',
                 examples: [
-                    'kubectl get pods',
-                    'kubectl apply -f deployment.yaml',
-                    'kubectl describe service my-service'
+                    // Resource Management
+                    '# Resource Management',
+                    'kubectl get pods [-n namespace] [-o wide/yaml/json]',
+                    'kubectl get services [-n namespace]',
+                    'kubectl get deployments [-n namespace]',
+                    'kubectl get all [-n namespace]',
+                    'kubectl get nodes [-o wide]',
+                    
+                    // Create & Update
+                    '# Create & Update Resources',
+                    'kubectl create -f [filename.yaml]',
+                    'kubectl apply -f [filename.yaml]',
+                    'kubectl edit [resource] [name]',
+                    'kubectl patch [resource] [name] -p \'{"spec": {"replicas": 3}}\'',
+                    
+                    // Delete Resources
+                    '# Delete Resources',
+                    'kubectl delete pod [pod-name]',
+                    'kubectl delete -f [filename.yaml]',
+                    'kubectl delete [resource] --all',
+                    
+                    // Describe & Explain
+                    '# Resource Information',
+                    'kubectl describe pod [pod-name]',
+                    'kubectl explain pods',
+                    'kubectl explain pods.spec',
+                    
+                    // Logs & Debugging
+                    '# Logs & Debugging',
+                    'kubectl logs [pod-name]',
+                    'kubectl logs -f [pod-name]',
+                    'kubectl exec -it [pod-name] -- /bin/bash',
+                    
+                    // Scaling & Rolling Updates
+                    '# Scaling & Updates',
+                    'kubectl scale deployment [name] --replicas=3',
+                    'kubectl rollout status deployment [name]',
+                    'kubectl rollout history deployment [name]',
+                    'kubectl rollout undo deployment [name]'
                 ]
             },
             etcd: {
                 title: 'etcd',
                 description: 'etcd is a consistent and highly-available key-value store used as Kubernetes\' backing store for all cluster data.',
                 examples: [
-                    'etcdctl get /registry/pods/default',
-                    'etcdctl backup',
-                    'etcdctl cluster-health'
+                    // Basic Operations
+                    '# Basic Operations',
+                    'etcdctl get / --prefix --keys-only',
+                    'etcdctl put /key value',
+                    'etcdctl get /key',
+                    'etcdctl del /key',
+                    
+                    // Cluster Management
+                    '# Cluster Management',
+                    'etcdctl member list',
+                    'etcdctl endpoint health',
+                    'etcdctl endpoint status',
+                    'etcdctl cluster-health',
+                    
+                    // Backup & Restore
+                    '# Backup & Restore',
+                    'etcdctl snapshot save snapshot.db',
+                    'etcdctl snapshot restore snapshot.db',
+                    'etcdctl snapshot status snapshot.db',
+                    
+                    // Watch & Monitoring
+                    '# Watch & Monitoring',
+                    'etcdctl watch --prefix /key',
+                    'etcdctl watch --rev=0 /key',
+                    
+                    // Authentication & Security
+                    '# Security',
+                    'etcdctl user add root',
+                    'etcdctl auth enable',
+                    'etcdctl role add role1',
+                    'etcdctl role grant-permission role1 read /key',
+                    
+                    // Maintenance
+                    '# Maintenance',
+                    'etcdctl defrag',
+                    'etcdctl compact',
+                    'etcdctl alarm list',
+                    'etcdctl endpoint health --cluster'
                 ]
             },
             kubelet: {
                 title: 'Kubelet',
                 description: 'The kubelet is the primary "node agent" that runs on each node and ensures containers are running in a Pod.',
                 examples: [
-                    'kubelet --config=config.yaml',
+                    // Configuration
+                    '# Configuration',
+                    'kubelet --config=/var/lib/kubelet/config.yaml',
+                    'kubelet --kubeconfig=/etc/kubernetes/kubelet.conf',
+                    'kubelet --pod-manifest-path=/etc/kubernetes/manifests',
+                    
+                    // Status & Monitoring
+                    '# Status & Monitoring',
                     'systemctl status kubelet',
-                    'journalctl -u kubelet'
+                    'journalctl -u kubelet',
+                    'journalctl -u kubelet -f',
+                    'kubelet --version',
+                    
+                    // Debug & Logs
+                    '# Debugging',
+                    'kubelet --v=4',
+                    'tail -f /var/log/kubelet.log',
+                    'crictl ps',
+                    'crictl pods',
+                    
+                    // Resource Management
+                    '# Resource Management',
+                    'kubelet --max-pods=110',
+                    'kubelet --kube-reserved=cpu=1000m,memory=1Gi',
+                    'kubelet --system-reserved=cpu=500m,memory=500Mi',
+                    
+                    // Certificate Management
+                    '# Certificates',
+                    'kubelet --tls-cert-file=/path/to/cert',
+                    'kubelet --tls-private-key-file=/path/to/key',
+                    'kubelet --rotate-certificates',
+                    
+                    // Health Checks
+                    '# Health Checks',
+                    'curl -k https://localhost:10250/healthz',
+                    'curl -k https://localhost:10250/metrics'
                 ]
             },
             kubeproxy: {
                 title: 'Kube Proxy',
                 description: 'Kube-proxy maintains network rules on nodes. These network rules allow network communication to your Pods from network sessions inside or outside of your cluster.',
                 examples: [
+                    // Configuration
+                    '# Configuration',
+                    'kube-proxy --config=/var/lib/kube-proxy/config.conf',
+                    'kube-proxy --proxy-mode=iptables',
+                    'kube-proxy --proxy-mode=ipvs',
+                    
+                    // Network Rules
+                    '# Network Rules',
+                    'iptables -t nat -L',
+                    'iptables -t nat -L KUBE-SERVICES',
+                    'ipvsadm -ln',
+                    'ipvsadm -Ln -t',
+                    
+                    // Monitoring
+                    '# Monitoring',
+                    'systemctl status kube-proxy',
+                    'journalctl -u kube-proxy',
+                    'kube-proxy --metrics-bind-address=0.0.0.0:10249',
+                    
+                    // Debug & Logs
+                    '# Debugging',
+                    'kube-proxy --v=4',
+                    'tail -f /var/log/kube-proxy.log',
+                    'conntrack -L',
+                    'netstat -nlp | grep kube-proxy',
+                    
+                    // Service Discovery
+                    '# Service Discovery',
                     'kubectl get endpoints',
-                    'iptables -L -t nat',
-                    'kube-proxy --proxy-mode=iptables'
+                    'kubectl describe endpoints [service-name]',
+                    'kubectl get services -o wide'
                 ]
             },
             scheduler: {
                 title: 'Scheduler',
                 description: 'The Kubernetes scheduler is a control plane component that assigns Pods to Nodes. The scheduler determines which Nodes are valid placements for each Pod based on constraints and available resources.',
                 examples: [
+                    // Basic Operations
+                    '# Basic Operations',
                     'kubectl get events | grep Scheduled',
-                    'kubectl describe pod | grep Node:',
-                    'kubectl get pods -o wide'
+                    'kubectl describe pod [pod-name] | grep Node:',
+                    'kubectl get pods -o wide',
+                    
+                    // Node Management
+                    '# Node Management',
+                    'kubectl cordon [node-name]',
+                    'kubectl uncordon [node-name]',
+                    'kubectl drain [node-name]',
+                    
+                    // Pod Scheduling
+                    '# Pod Scheduling',
+                    'kubectl label node [node-name] disktype=ssd',
+                    'kubectl taint nodes [node-name] key=value:NoSchedule',
+                    'kubectl get pods --field-selector spec.nodeName=[node-name]',
+                    
+                    // Configuration
+                    '# Configuration',
+                    'kube-scheduler --config=/etc/kubernetes/scheduler.conf',
+                    'kube-scheduler --leader-elect=true',
+                    'kube-scheduler --profiling',
+                    
+                    // Monitoring
+                    '# Monitoring',
+                    'kubectl top nodes',
+                    'kubectl describe nodes | grep Allocated',
+                    'kubectl get events --field-selector reason=Scheduled',
+                    
+                    // Advanced Scheduling
+                    '# Advanced Scheduling',
+                    'kubectl explain pod.spec.affinity',
+                    'kubectl explain pod.spec.tolerations',
+                    'kubectl explain pod.spec.nodeSelector'
                 ]
             },
             controllermanager: {
                 title: 'Controller Manager',
                 description: 'The Kubernetes controller manager is a daemon that embeds the core control loops shipped with Kubernetes. It watches the state of the cluster through the API server and makes changes to move the current state towards the desired state.',
                 examples: [
+                    // Resource Controllers
+                    '# Resource Controllers',
                     'kubectl get deployments',
-                    'kubectl describe replicaset',
-                    'kubectl get nodes'
+                    'kubectl get replicasets',
+                    'kubectl get daemonsets',
+                    'kubectl get statefulsets',
+                    'kubectl get jobs',
+                    'kubectl get cronjobs',
+                    
+                    // Node Management
+                    '# Node Management',
+                    'kubectl get nodes',
+                    'kubectl describe node [node-name]',
+                    'kubectl get componentstatuses',
+                    
+                    // Configuration
+                    '# Configuration',
+                    'kube-controller-manager --leader-elect=true',
+                    'kube-controller-manager --controllers=*,bootstrapsigner,tokencleaner',
+                    'kube-controller-manager --cluster-cidr=10.244.0.0/16',
+                    
+                    // Monitoring
+                    '# Monitoring',
+                    'kubectl describe deployments',
+                    'kubectl rollout status deployment [name]',
+                    'kubectl get events --field-selector reason=ScalingReplicaSet',
+                    
+                    // Service Accounts
+                    '# Service Accounts',
+                    'kubectl get serviceaccounts',
+                    'kubectl create serviceaccount [name]',
+                    'kubectl get secrets',
+                    
+                    // Debugging
+                    '# Debugging',
+                    'kubectl logs deployment/[name]',
+                    'kubectl describe replicaset [name]',
+                    'kubectl get pods --selector=app=[label]'
                 ]
             }
         };
 
-        // Function to show component details
+        // Function to show component details with categorized commands
         function showDetails(component) {
             const details = componentDetails[component];
             if (!details) return;
 
             const detailsPanel = document.getElementById('detailsPanel');
+            let commandsHtml = '';
+            let currentCategory = '';
+
+            details.examples.forEach(example => {
+                if (example.startsWith('#')) {
+                    // This is a category header
+                    currentCategory = example.substring(2);
+                    commandsHtml += `<div class="command-category">${currentCategory}</div>`;
+                } else {
+                    // This is a command
+                    commandsHtml += `<code title="Click to copy" onclick="copyCommand(this)">${example}</code>`;
+                }
+            });
+
             detailsPanel.innerHTML = `
                 <h3>${details.title}</h3>
                 <p>${details.description}</p>
-                <h5>Example Commands:</h5>
+                <h5>Available Commands:</h5>
                 <div class="code-examples">
-                    ${details.examples.map(ex => `<code>${ex}</code>`).join('<br>')}
+                    ${commandsHtml}
                 </div>
             `;
+        }
+
+        // Function to copy command to clipboard
+        function copyCommand(element) {
+            const text = element.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                const originalBackground = element.style.backgroundColor;
+                element.style.backgroundColor = '#28a745';
+                element.style.color = 'white';
+                setTimeout(() => {
+                    element.style.backgroundColor = originalBackground;
+                    element.style.color = '';
+                }, 500);
+            });
         }
 
         // Command simulation
