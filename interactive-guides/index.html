@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Kubernetes Learning</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
         // Initialize Mermaid with specific configuration
@@ -63,6 +64,34 @@
             margin-bottom: 10px;
             border-radius: 4px;
         }
+        .setup-step {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #28a745;
+        }
+        .setup-command {
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .setup-command:hover {
+            background-color: #2d2d2d;
+        }
+        .step-status {
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        .step-status.success {
+            color: #28a745;
+        }
+        .step-status.error {
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +102,54 @@
     </nav>
 
     <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <!-- Setup Environment Card -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Setup Environment</h4>
+                        <button class="btn btn-light btn-sm" onclick="checkEnvironment()">Check Environment</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <strong>Prerequisites:</strong> Make sure you have the following installed:
+                            <ul>
+                                <li>Docker Desktop</li>
+                                <li>kubectl CLI</li>
+                                <li>minikube or kind</li>
+                            </ul>
+                        </div>
+                        <div class="setup-steps">
+                            <h5>Quick Start Steps:</h5>
+                            <div class="step-list">
+                                <div class="setup-step" data-step="1">
+                                    <h6>1. Start Docker Desktop</h6>
+                                    <pre class="setup-command" onclick="copyCommand(this)">docker --version</pre>
+                                    <div class="step-status"></div>
+                                </div>
+                                <div class="setup-step" data-step="2">
+                                    <h6>2. Start Local Kubernetes Cluster</h6>
+                                    <pre class="setup-command" onclick="copyCommand(this)">minikube start --driver=docker</pre>
+                                    <div class="step-status"></div>
+                                </div>
+                                <div class="setup-step" data-step="3">
+                                    <h6>3. Verify Cluster Status</h6>
+                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl cluster-info</pre>
+                                    <div class="step-status"></div>
+                                </div>
+                                <div class="setup-step" data-step="4">
+                                    <h6>4. Check Node Status</h6>
+                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl get nodes</pre>
+                                    <div class="step-status"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="environment-status" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- First Row - Diagram and Interactive Exercises -->
         <div class="row mb-4">
             <!-- Architecture Diagram -->
@@ -586,6 +663,52 @@
                 ]
             }
         };
+
+        // Function to check environment status
+        async function checkEnvironment() {
+            const steps = document.querySelectorAll('.setup-step');
+            const envStatus = document.getElementById('environment-status');
+            envStatus.innerHTML = '<div class="alert alert-info">Checking environment...</div>';
+            
+            let allSuccess = true;
+            
+            for (const step of steps) {
+                const command = step.querySelector('.setup-command').textContent;
+                const statusDiv = step.querySelector('.step-status');
+                statusDiv.innerHTML = 'Checking...';
+                
+                try {
+                    const response = await fetch('/execute-command', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ command })
+                    });
+                    
+                    const result = await response.text();
+                    
+                    if (response.ok && !result.toLowerCase().includes('error')) {
+                        statusDiv.className = 'step-status success';
+                        statusDiv.innerHTML = '<i class="bi bi-check-circle"></i> Success';
+                    } else {
+                        statusDiv.className = 'step-status error';
+                        statusDiv.innerHTML = '<i class="bi bi-x-circle"></i> Failed';
+                        allSuccess = false;
+                    }
+                } catch (error) {
+                    statusDiv.className = 'step-status error';
+                    statusDiv.innerHTML = '<i class="bi bi-x-circle"></i> Error: ' + error.message;
+                    allSuccess = false;
+                }
+            }
+            
+            if (allSuccess) {
+                envStatus.innerHTML = '<div class="alert alert-success">Environment is ready! You can now proceed with the exercises.</div>';
+            } else {
+                envStatus.innerHTML = '<div class="alert alert-warning">Some environment checks failed. Please review the steps above and ensure all prerequisites are properly installed.</div>';
+            }
+        }
     </script>
 </body>
 </html>
