@@ -92,6 +92,18 @@
         .step-status.error {
             color: #dc3545;
         }
+        .setup-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #17a2b8;
+        }
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -114,32 +126,83 @@
                         <div class="alert alert-info">
                             <strong>Prerequisites:</strong> Make sure you have the following installed:
                             <ul>
-                                <li>Docker Desktop</li>
-                                <li>kubectl CLI</li>
-                                <li>minikube or kind</li>
+                                <li>Docker Desktop (version 4.0.0 or higher)</li>
+                                <li>kubectl CLI (version 1.20.0 or higher)</li>
+                                <li>minikube (version 1.25.0 or higher)</li>
                             </ul>
                         </div>
                         <div class="setup-steps">
                             <h5>Quick Start Steps:</h5>
                             <div class="step-list">
                                 <div class="setup-step" data-step="1">
-                                    <h6>1. Start Docker Desktop</h6>
-                                    <pre class="setup-command" onclick="copyCommand(this)">docker --version</pre>
+                                    <h6>1. Verify Docker Installation</h6>
+                                    <p class="step-description">Check Docker version and service status:</p>
+                                    <pre class="setup-command" onclick="copyCommand(this)">docker --version && docker info</pre>
+                                    <div class="setup-info">
+                                        <strong>Expected:</strong>
+                                        <ul>
+                                            <li>Docker version 4.0.0 or higher</li>
+                                            <li>Docker daemon should be running</li>
+                                            <li>Docker Desktop should be in Linux container mode</li>
+                                        </ul>
+                                    </div>
                                     <div class="step-status"></div>
                                 </div>
                                 <div class="setup-step" data-step="2">
-                                    <h6>2. Start Local Kubernetes Cluster</h6>
-                                    <pre class="setup-command" onclick="copyCommand(this)">minikube start --driver=docker</pre>
+                                    <h6>2. Verify kubectl Installation</h6>
+                                    <p class="step-description">Check kubectl version:</p>
+                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl version --client</pre>
+                                    <div class="setup-info">
+                                        <strong>Expected:</strong>
+                                        <ul>
+                                            <li>Client version 1.20.0 or higher</li>
+                                            <li>No connection errors</li>
+                                        </ul>
+                                    </div>
                                     <div class="step-status"></div>
                                 </div>
                                 <div class="setup-step" data-step="3">
-                                    <h6>3. Verify Cluster Status</h6>
-                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl cluster-info</pre>
+                                    <h6>3. Start Local Kubernetes Cluster</h6>
+                                    <p class="step-description">Initialize minikube with Docker driver:</p>
+                                    <pre class="setup-command" onclick="copyCommand(this)">minikube version && minikube start --driver=docker --kubernetes-version=v1.26.0</pre>
+                                    <div class="setup-info">
+                                        <strong>Expected:</strong>
+                                        <ul>
+                                            <li>minikube version 1.25.0 or higher</li>
+                                            <li>Successful cluster creation</li>
+                                            <li>Docker driver properly configured</li>
+                                        </ul>
+                                        <div class="alert alert-warning mt-2">
+                                            <i class="bi bi-info-circle"></i> This step may take a few minutes to complete.
+                                        </div>
+                                    </div>
                                     <div class="step-status"></div>
                                 </div>
                                 <div class="setup-step" data-step="4">
-                                    <h6>4. Check Node Status</h6>
-                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl get nodes</pre>
+                                    <h6>4. Verify Cluster Status</h6>
+                                    <p class="step-description">Check cluster and node status:</p>
+                                    <pre class="setup-command" onclick="copyCommand(this)">kubectl cluster-info && kubectl get nodes -o wide</pre>
+                                    <div class="setup-info">
+                                        <strong>Expected:</strong>
+                                        <ul>
+                                            <li>Kubernetes control plane should be running</li>
+                                            <li>CoreDNS should be running</li>
+                                            <li>Node status should be "Ready"</li>
+                                        </ul>
+                                    </div>
+                                    <div class="step-status"></div>
+                                </div>
+                                <div class="setup-step" data-step="5">
+                                    <h6>5. Enable Required Addons</h6>
+                                    <p class="step-description">Enable necessary minikube addons:</p>
+                                    <pre class="setup-command" onclick="copyCommand(this)">minikube addons enable metrics-server && minikube addons enable dashboard && minikube addons list</pre>
+                                    <div class="setup-info">
+                                        <strong>Expected:</strong>
+                                        <ul>
+                                            <li>metrics-server addon enabled</li>
+                                            <li>dashboard addon enabled</li>
+                                        </ul>
+                                    </div>
                                     <div class="step-status"></div>
                                 </div>
                             </div>
@@ -664,7 +727,7 @@
             }
         };
 
-        // Function to check environment status
+        // Enhanced function to check environment status with version comparisons
         async function checkEnvironment() {
             const steps = document.querySelectorAll('.setup-step');
             const envStatus = document.getElementById('environment-status');
@@ -675,7 +738,7 @@
             for (const step of steps) {
                 const command = step.querySelector('.setup-command').textContent;
                 const statusDiv = step.querySelector('.step-status');
-                statusDiv.innerHTML = 'Checking...';
+                statusDiv.innerHTML = '<i class="bi bi-hourglass-split"></i> Checking...';
                 
                 try {
                     const response = await fetch('/execute-command', {
@@ -688,12 +751,54 @@
                     
                     const result = await response.text();
                     
-                    if (response.ok && !result.toLowerCase().includes('error')) {
+                    // Version checks and specific validations
+                    let isValid = true;
+                    let message = '';
+                    
+                    if (command.includes('docker --version')) {
+                        const versionMatch = result.match(/Docker version (\d+\.\d+\.\d+)/);
+                        if (versionMatch) {
+                            const version = versionMatch[1];
+                            if (compareVersions(version, '4.0.0') < 0) {
+                                isValid = false;
+                                message = `Docker version ${version} is outdated. Please upgrade to 4.0.0 or higher.`;
+                            }
+                        }
+                        if (!result.includes('Docker daemon is running')) {
+                            isValid = false;
+                            message = 'Docker daemon is not running. Please start Docker Desktop.';
+                        }
+                    }
+                    else if (command.includes('kubectl version')) {
+                        const versionMatch = result.match(/Client Version: v(\d+\.\d+\.\d+)/);
+                        if (versionMatch) {
+                            const version = versionMatch[1];
+                            if (compareVersions(version, '1.20.0') < 0) {
+                                isValid = false;
+                                message = `kubectl version ${version} is outdated. Please upgrade to 1.20.0 or higher.`;
+                            }
+                        }
+                    }
+                    else if (command.includes('minikube version')) {
+                        const versionMatch = result.match(/minikube version: v(\d+\.\d+\.\d+)/);
+                        if (versionMatch) {
+                            const version = versionMatch[1];
+                            if (compareVersions(version, '1.25.0') < 0) {
+                                isValid = false;
+                                message = `minikube version ${version} is outdated. Please upgrade to 1.25.0 or higher.`;
+                            }
+                        }
+                    }
+                    
+                    if (isValid && response.ok && !result.toLowerCase().includes('error')) {
                         statusDiv.className = 'step-status success';
                         statusDiv.innerHTML = '<i class="bi bi-check-circle"></i> Success';
+                        if (message) {
+                            statusDiv.innerHTML += `<br><small>${message}</small>`;
+                        }
                     } else {
                         statusDiv.className = 'step-status error';
-                        statusDiv.innerHTML = '<i class="bi bi-x-circle"></i> Failed';
+                        statusDiv.innerHTML = `<i class="bi bi-x-circle"></i> Failed${message ? ': ' + message : ''}`;
                         allSuccess = false;
                     }
                 } catch (error) {
@@ -704,10 +809,25 @@
             }
             
             if (allSuccess) {
-                envStatus.innerHTML = '<div class="alert alert-success">Environment is ready! You can now proceed with the exercises.</div>';
+                envStatus.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> Environment is ready! You can now proceed with the exercises.</div>';
             } else {
-                envStatus.innerHTML = '<div class="alert alert-warning">Some environment checks failed. Please review the steps above and ensure all prerequisites are properly installed.</div>';
+                envStatus.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill"></i> Some environment checks failed. Please review the steps above and ensure all prerequisites are properly installed and up to date.</div>';
             }
+        }
+
+        // Version comparison helper function
+        function compareVersions(a, b) {
+            const pa = a.split('.');
+            const pb = b.split('.');
+            for (let i = 0; i < 3; i++) {
+                const na = Number(pa[i]);
+                const nb = Number(pb[i]);
+                if (na > nb) return 1;
+                if (nb > na) return -1;
+                if (!isNaN(na) && isNaN(nb)) return 1;
+                if (isNaN(na) && !isNaN(nb)) return -1;
+            }
+            return 0;
         }
     </script>
 </body>
