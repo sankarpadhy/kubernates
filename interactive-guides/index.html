@@ -489,6 +489,33 @@
                     'systemctl status kubelet',
                     'journalctl -u kubelet'
                 ]
+            },
+            kubeproxy: {
+                title: 'Kube Proxy',
+                description: 'Kube-proxy maintains network rules on nodes. These network rules allow network communication to your Pods from network sessions inside or outside of your cluster.',
+                examples: [
+                    'kubectl get endpoints',
+                    'iptables -L -t nat',
+                    'kube-proxy --proxy-mode=iptables'
+                ]
+            },
+            scheduler: {
+                title: 'Scheduler',
+                description: 'The Kubernetes scheduler is a control plane component that assigns Pods to Nodes. The scheduler determines which Nodes are valid placements for each Pod based on constraints and available resources.',
+                examples: [
+                    'kubectl get events | grep Scheduled',
+                    'kubectl describe pod | grep Node:',
+                    'kubectl get pods -o wide'
+                ]
+            },
+            controllermanager: {
+                title: 'Controller Manager',
+                description: 'The Kubernetes controller manager is a daemon that embeds the core control loops shipped with Kubernetes. It watches the state of the cluster through the API server and makes changes to move the current state towards the desired state.',
+                examples: [
+                    'kubectl get deployments',
+                    'kubectl describe replicaset',
+                    'kubectl get nodes'
+                ]
             }
         };
 
