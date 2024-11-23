@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Kubernetes Learning</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         .component {
             cursor: pointer;
@@ -76,12 +77,42 @@
 
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12 mb-4">
                 <h2>Kubernetes Architecture</h2>
-                <div class="animation-container" id="architectureDemo">
-                    <!-- Components will be added dynamically -->
-                </div>
+                <div class="mermaid">
+                    graph TD
+                        subgraph "Control Plane (Master Node)"
+                            API[API Server] --> ETCD[etcd]
+                            API --> CM[Controller Manager]
+                            API --> SCHED[Scheduler]
+                            CM --> API
+                            SCHED --> API
+                        end
 
+                        subgraph "Worker Node 1"
+                            KL1[Kubelet] --> API
+                            KP1[Kube Proxy] --> API
+                            CR1[Container Runtime]
+                            KL1 --> CR1
+                        end
+
+                        subgraph "Worker Node 2"
+                            KL2[Kubelet] --> API
+                            KP2[Kube Proxy] --> API
+                            CR2[Container Runtime]
+                            KL2 --> CR2
+                        end
+
+                        style API fill:#f9f,stroke:#333,stroke-width:2px
+                        style ETCD fill:#bbf,stroke:#333,stroke-width:2px
+                        style CM fill:#bfb,stroke:#333,stroke-width:2px
+                        style SCHED fill:#fbf,stroke:#333,stroke-width:2px
+                        style KL1,KL2 fill:#ff9,stroke:#333,stroke-width:2px
+                        style KP1,KP2 fill:#f99,stroke:#333,stroke-width:2px
+                        style CR1,CR2 fill:#9ff,stroke:#333,stroke-width:2px
+                </div>
+            </div>
+            <div class="col-md-8">
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <div class="component control-plane" onclick="showDetails('apiserver')">
@@ -256,6 +287,9 @@
                 pod.style.top = '150px';
             }, 1000);
         }
+
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
