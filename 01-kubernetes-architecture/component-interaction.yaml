@@ -1,0 +1,36 @@
+version: '3'
+services:
+  # Simulating API Server
+  api-server:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    networks:
+      - k8s-demo
+    volumes:
+      - ./api-server-demo/index.html:/usr/share/nginx/html/index.html
+
+  # Simulating etcd
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.0
+    ports:
+      - "2379:2379"
+    networks:
+      - k8s-demo
+    command:
+      - /usr/local/bin/etcd
+      - --advertise-client-urls=http://0.0.0.0:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+
+  # Simulating Worker Node
+  worker:
+    image: nginx:latest
+    networks:
+      - k8s-demo
+    depends_on:
+      - api-server
+      - etcd
+
+networks:
+  k8s-demo:
+    driver: bridge
