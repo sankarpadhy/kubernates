@@ -96,6 +96,28 @@ kubernetes/
     └── ...
 ```
 
+## Interactive Learning Guides
+
+To make learning Kubernetes more engaging and hands-on, we've created interactive visualizations:
+
+1. **Kubernetes Architecture Explorer** (`interactive-guides/index.html`)
+   - Interactive component visualization
+   - Live command simulation
+   - Component relationship demonstrations
+   - Hands-on exercises
+
+2. **Pod Networking Simulator** (`interactive-guides/pod-networking.html`)
+   - Visual pod-to-pod communication
+   - Service networking demonstration
+   - Real-time traffic simulation
+   - Network policy visualization
+
+To use these guides:
+1. Open the HTML files in your browser
+2. Click on components to see detailed information
+3. Try the interactive exercises
+4. Experiment with different networking scenarios
+
 ## Progress Tracking
 
 ### Week 1 Goals

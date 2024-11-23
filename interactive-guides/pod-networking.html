@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Pod Networking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .network-container {
+            position: relative;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        .node {
+            position: absolute;
+            width: 200px;
+            height: 300px;
+            background-color: #ffffff;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .pod {
+            width: 80px;
+            height: 80px;
+            background-color: #bbdefb;
+            border-radius: 50%;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pod:hover {
+            transform: scale(1.1);
+        }
+        .service {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background-color: #c8e6c9;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .network-line {
+            position: absolute;
+            background-color: #90caf9;
+            transition: all 0.3s ease;
+        }
+        .control-panel {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 300px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .log-panel {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="network-container" id="networkDemo">
+            <!-- Nodes and pods will be added dynamically -->
+        </div>
+
+        <div class="control-panel">
+            <h4>Network Simulation</h4>
+            <div class="btn-group w-100 mb-3">
+                <button class="btn btn-primary" onclick="simulateRequest()">Simulate Request</button>
+                <button class="btn btn-secondary" onclick="resetSimulation()">Reset</button>
+            </div>
+            <div class="form-group">
+                <label>Traffic Type</label>
+                <select class="form-control" id="trafficType">
+                    <option value="pod-to-pod">Pod to Pod</option>
+                    <option value="pod-to-service">Pod to Service</option>
+                    <option value="external">External Traffic</option>
+                </select>
+            </div>
+            <div class="log-panel" id="logPanel">
+                <!-- Network logs will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let nodes = [];
+        let pods = [];
+        let services = [];
+        let networkLines = [];
+
+        function initializeNetwork() {
+            const container = document.getElementById('networkDemo');
+            
+            // Create nodes
+            for (let i = 0; i < 3; i++) {
+                const node = createNode(i);
+                nodes.push(node);
+                container.appendChild(node);
+
+                // Create pods for each node
+                for (let j = 0; j < 2; j++) {
+                    const pod = createPod(i, j);
+                    pods.push(pod);
+                    node.appendChild(pod);
+                }
+            }
+
+            // Create service
+            const service = document.createElement('div');
+            service.className = 'service';
+            service.innerHTML = 'Service';
+            service.style.left = '400px';
+            service.style.top = '50px';
+            services.push(service);
+            container.appendChild(service);
+        }
+
+        function createNode(index) {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.style.left = `${index * 250 + 50}px`;
+            node.style.top = '150px';
+            node.innerHTML = `<h5>Node ${index + 1}</h5>`;
+            return node;
+        }
+
+        function createPod(nodeIndex, podIndex) {
+            const pod = document.createElement('div');
+            pod.className = 'pod';
+            pod.innerHTML = `Pod ${nodeIndex}-${podIndex}`;
+            pod.onclick = () => selectPod(pod);
+            return pod;
+        }
+
+        function selectPod(pod) {
+            pods.forEach(p => p.style.border = 'none');
+            pod.style.border = '2px solid #f44336';
+            logNetworkEvent(`Selected ${pod.innerHTML}`);
+        }
+
+        function simulateRequest() {
+            const trafficType = document.getElementById('trafficType').value;
+            const selectedPod = pods.find(p => p.style.border);
+
+            if (!selectedPod) {
+                logNetworkEvent('Please select a source pod first');
+                return;
+            }
+
+            switch(trafficType) {
+                case 'pod-to-pod':
+                    simulatePodToPod(selectedPod);
+                    break;
+                case 'pod-to-service':
+                    simulatePodToService(selectedPod);
+                    break;
+                case 'external':
+                    simulateExternalTraffic(selectedPod);
+                    break;
+            }
+        }
+
+        function simulatePodToPod(sourcePod) {
+            const targetPod = pods.find(p => p !== sourcePod);
+            drawNetworkLine(sourcePod, targetPod);
+            logNetworkEvent(`Traffic from ${sourcePod.innerHTML} to ${targetPod.innerHTML}`);
+        }
+
+        function simulatePodToService(sourcePod) {
+            const service = services[0];
+            drawNetworkLine(sourcePod, service);
+            logNetworkEvent(`Traffic from ${sourcePod.innerHTML} to Service`);
+        }
+
+        function drawNetworkLine(source, target) {
+            const line = document.createElement('div');
+            line.className = 'network-line';
+            
+            // Calculate line position and dimensions
+            const sourceRect = source.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            
+            // Position and animate the line
+            // (simplified for this example)
+            line.style.width = '2px';
+            line.style.height = '100px';
+            line.style.left = `${sourceRect.left + sourceRect.width/2}px`;
+            line.style.top = `${sourceRect.top + sourceRect.height}px`;
+            
+            document.getElementById('networkDemo').appendChild(line);
+            networkLines.push(line);
+        }
+
+        function logNetworkEvent(message) {
+            const logPanel = document.getElementById('logPanel');
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+            logPanel.appendChild(logEntry);
+            logPanel.scrollTop = logPanel.scrollHeight;
+        }
+
+        function resetSimulation() {
+            pods.forEach(p => p.style.border = 'none');
+            networkLines.forEach(line => line.remove());
+            networkLines = [];
+            logNetworkEvent('Simulation reset');
+        }
+
+        // Initialize the network when the page loads
+        document.addEventListener('DOMContentLoaded', initializeNetwork);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
