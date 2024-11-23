@@ -1,0 +1,12 @@
+{
+  "name": "kubernetes-interactive-guide",
+  "version": "1.0.0",
+  "description": "Interactive Kubernetes learning environment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
